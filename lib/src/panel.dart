@@ -292,7 +292,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 //set color to null so that touch events pass through
                 //to the body when the panel is closed, otherwise,
                 //if a color exists, then touch events won't go through
-                color: _isPanelVisible && showBackdropEvenWhenPanelIsClosed ? widget.backdropColor.withOpacity(widget.backdropOpacity) : _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+                color: _isPanelVisible && widget.showBackdropEvenWhenPanelIsClosed ? widget.backdropColor.withOpacity(widget.backdropOpacity) : _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
               );
             }
           ),
