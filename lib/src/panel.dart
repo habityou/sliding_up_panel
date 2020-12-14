@@ -165,6 +165,9 @@ class SlidingUpPanel extends StatefulWidget {
 
   /// This is used to show the backdrop even when the panel is closed
   final bool showBackdropEvenWhenPanelIsClosed;
+  
+  /// This is used to show the backdrop even when the panel is closed
+  final Function onBackdropTap;
 
   SlidingUpPanel({
     Key key,
@@ -202,6 +205,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.showBackdropEvenWhenPanelIsClosed = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
+    this.onBackdropTap,
     this.header,
     this.footer
   }) : assert(panel != null || panelBuilder != null),
@@ -281,7 +285,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
             if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
               _close();
           } : null,
-          onTap: widget.backdropTapClosesPanel ? () => _close() : null,
+          onTap: widget.onBackdropTap != null ? 
+            () => widget.onBackdropTap() : 
+            widget.backdropTapClosesPanel ? 
+              () => _close() : 
+              null,
           child: AnimatedBuilder(
             animation: _ac,
             builder: (context, _) {
@@ -292,7 +300,11 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 //set color to null so that touch events pass through
                 //to the body when the panel is closed, otherwise,
                 //if a color exists, then touch events won't go through
-                color: _isPanelVisible && widget.showBackdropEvenWhenPanelIsClosed ? widget.backdropColor.withOpacity(widget.backdropOpacity) : _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+                color: _isPanelVisible && widget.showBackdropEvenWhenPanelIsClosed ? 
+                  widget.backdropColor.withOpacity(widget.backdropOpacity) : 
+                  _ac.value == 0.0 ? 
+                    null : 
+                    widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
               );
             }
           ),
