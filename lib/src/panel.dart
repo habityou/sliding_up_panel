@@ -163,6 +163,9 @@ class SlidingUpPanel extends StatefulWidget {
   /// by default the Panel is open and must be swiped closed by the user.
   final PanelState defaultPanelState;
 
+  /// This is used to show the backdrop even when the panel is closed
+  final bool showBackdropEvenWhenPanelIsClosed;
+
   SlidingUpPanel({
     Key key,
     this.panel,
@@ -196,6 +199,7 @@ class SlidingUpPanel extends StatefulWidget {
     this.parallaxEnabled = false,
     this.parallaxOffset = 0.1,
     this.isDraggable = true,
+    this.showBackdropEvenWhenPanelIsClosed = true,
     this.slideDirection = SlideDirection.UP,
     this.defaultPanelState = PanelState.CLOSED,
     this.header,
@@ -271,7 +275,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
 
 
         //the backdrop to overlay on the body
-        !widget.backdropEnabled ? Container() : GestureDetector(
+        !widget.backdropEnabled || !_isPanelVisible ? Container() : GestureDetector(
           onVerticalDragEnd: widget.backdropTapClosesPanel ? (DragEndDetails dets){
             // only trigger a close if the drag is towards panel close position
             if((widget.slideDirection == SlideDirection.UP ? 1 : -1) * dets.velocity.pixelsPerSecond.dy > 0)
@@ -288,7 +292,7 @@ class _SlidingUpPanelState extends State<SlidingUpPanel> with SingleTickerProvid
                 //set color to null so that touch events pass through
                 //to the body when the panel is closed, otherwise,
                 //if a color exists, then touch events won't go through
-                color: _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
+                color: _isPanelVisible && showBackdropEvenWhenPanelIsClosed ? widget.backdropColor.withOpacity(widget.backdropOpacity) : _ac.value == 0.0 ? null : widget.backdropColor.withOpacity(widget.backdropOpacity * _ac.value),
               );
             }
           ),
