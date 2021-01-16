@@ -327,8 +327,8 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
         //the actual sliding part
         !_isPanelVisible
             ? Container()
-            : _gestureHandler(
-                child: AnimatedBuilder(
+            : Builder(builder: (BuildContext context) {
+                var child = AnimatedBuilder(
                   animation: _ac,
                   builder: (context, child) {
                     return Container(
@@ -432,8 +432,33 @@ class _SlidingUpPanelState extends State<SlidingUpPanel>
                       ),
                     ],
                   ),
-                ),
-              ),
+                );
+
+                if (!widget.isDraggable) return child;
+
+                if (widget.panel != null) {
+                  return GestureDetector(
+                    onVerticalDragUpdate: (DragUpdateDetails dets) =>
+                        _onGestureSlide(dets.delta.dy),
+                    onVerticalDragEnd: (DragEndDetails dets) =>
+                        _onGestureEnd(dets.velocity),
+                    child: child,
+                  );
+                }
+
+                return Listener(
+                  onPointerDown: (PointerDownEvent p) =>
+                      _vt.addPosition(p.timeStamp, p.position),
+                  onPointerMove: (PointerMoveEvent p) {
+                    _vt.addPosition(p.timeStamp,
+                        p.position); // add current position for velocity tracking
+                    _onGestureSlide(p.delta.dy);
+                  },
+                  onPointerUp: (PointerUpEvent p) =>
+                      _onGestureEnd(_vt.getVelocity()),
+                  child: child,
+                );
+              })
       ],
     );
   }
